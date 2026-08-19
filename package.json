@@ -1,0 +1,20 @@
+{
+  "name": "rust-slides",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "slidev build",
+    "dev": "slidev",
+    "export": "slidev export --wait 500 --per-slide",
+    "build:mason": "slidev build --base /~rwang29/talks/rust/ --without-notes"
+  },
+  "dependencies": {
+    "@slidev/cli": "^52.14.1",
+    "@slidev/theme-default": "latest",
+    "@slidev/theme-seriph": "latest",
+    "vue": "^3.5.29"
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.58.2"
+  }
+}
