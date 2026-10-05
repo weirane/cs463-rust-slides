@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, onUpdated, ref } from "vue";
 
+const props = defineProps({
+  top: { type: String, default: "100px" },
+});
+
 const source = ref<HTMLElement>();
 const slotCode = ref("");
 function readSlotCode() {
@@ -27,11 +31,12 @@ const url = computed(() => {
   <a
     v-if="url"
     class="playground-link"
+    :style="{ top: `calc(${props.top} - 18px)` }"
     :href="url"
     target="_blank"
     rel="noopener noreferrer"
   >Open in Playground ↗</a>
-  <div class="rust-playground">
+  <div class="rust-playground" :style="{ top: props.top }">
     <div ref="source" hidden><slot /></div>
     <iframe v-if="url" title="Rust Playground" :src="url" />
   </div>
@@ -40,18 +45,16 @@ const url = computed(() => {
 <style scoped>
 .playground-link {
   position: absolute;
-  top: 76px;
-  right: 10pt;
-  font-size: 12px;
-  line-height: 18px;
+  right: 10px;
+  font-size: 10px;
+  line-height: 14px;
 }
 
 .rust-playground {
   position: absolute;
-  top: 100px;
-  left: 10pt;
-  right: 10pt;
-  bottom: 10pt;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
   overflow: hidden;
 }
 

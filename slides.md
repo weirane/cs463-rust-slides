@@ -263,7 +263,7 @@ layout: section
 layout: default
 ---
 
-# Factorial
+# Factorial example
 
 <RustPlayground>
 
@@ -287,7 +287,7 @@ fn main() {
 
 ---
 
-# If **expressions**
+# If ***expressions***
 
 <RustPlayground>
 
@@ -330,8 +330,7 @@ fn main() {
 
     // Shadow the earlier binding.
     let x = "hello";
-    println!("shadowed: x = {}", x);
-    println!("");
+    println!("shadowed: x = {}\n", x);
 
     // Explicit type annotation OK.
     let a: i32 = 5;
@@ -353,10 +352,11 @@ fn main() {
 <RustPlayground>
 
 ```rust
-// A. 6
-// B. 7
-// C. 5
-// D. Error
+/* A. 6
+ * B. 7
+ * C. 5
+ * D. Error
+ */
 
 fn main() {
     let x = 6;
@@ -375,10 +375,11 @@ fn main() {
 <RustPlayground>
 
 ```rust
-// A. 6
-// B. true
-// C. false
-// D. error
+/* A. 6
+ * B. true
+ * C. false
+ * D. error
+ */
 
 #[allow(warnings)]
 fn main() {
@@ -398,10 +399,11 @@ fn main() {
 <RustPlayground>
 
 ```rust
-// A. 1
-// B. 6
-// C. 0
-// D. error
+/* A. 1
+ * B. 6
+ * C. 0
+ * D. error
+ */
 
 #[allow(warnings)]
 fn main() {
@@ -411,6 +413,146 @@ fn main() {
     }
     println!("{}", x);
 }
+```
+
+</RustPlayground>
+
+---
+layout: two-cols-header
+---
+
+# Data: Scalar Types
+
+::left::
+
+- Integers
+  - Signed: `i8`, `i16`, `i32`, `i64`
+  - Unsigned: `u8`, `u16`, `u32`, `u64`
+  - `isize`, `usize`: machine word size
+
+- Floating point numbers
+  - `f32`, `f64`
+
+- Defaults (from inference): `i32`, `f64`
+
+::right::
+
+- Characters (unicode)
+  - `char`
+
+- Booleans
+  - `bool` = \{ `true`, `false` }
+
+---
+
+# Compound Data: Tuples (hide?)
+
+- n-tuple type `(t1, …, tn)`
+
+  - unit `()` is just the 0-tuple
+  
+- n-tuple expression `(e1, …, en)`
+
+- Accessed by pattern matching or like a record field (`tuple.0`)
+
+```rust
+let tuple = ("hello", 5, 'c');
+
+assert_eq!(tuple.0, "hello");
+
+let (x, y, z) = tuple;
+```
+
+---
+
+# Compound Data: Tuples (hide?)
+
+<RustPlayground>
+
+```rust
+// Distance between two points pa: (x1, y1) and pb: (x2, y2).
+fn dist(pa: (f64, f64), pb: (f64, f64)) -> f64 {
+    let (ax, ay) = pa;
+    let bx = pb.0;
+    let by = pb.1;
+    let dx = ax - bx;
+    let dy = ay - by;
+    (dx * dx + dy * dy).sqrt()
+}
+
+fn main() {
+    println!("{}", dist((0.0, 0.0), (3.0, 4.0)));
+}
+```
+
+</RustPlayground>
+
+---
+
+# Compound Data: Fixed-length Arrays
+
+<RustPlayground>
+
+```rust
+#[allow(warnings, unconditional_panic)]
+fn main() {
+    // Create an array
+    let nums: [i32; 3] = [1, 2, 3];
+    let strs = ["Monday", "Tuesday", "Wednesday"];
+
+    // Index into the array
+    let x = nums[0];
+    let s = strs[1];
+    println!("nums[0] = {x}; strs[1] = {s}\n");
+
+    // Only mutable arrays can be modified
+    let mut xs = [1, 2, 3];
+    xs[0] = 1;
+    println!("xs = {xs:?}");
+
+    // out-of-bounds panic
+    // let y = xs[4];
+}
+```
+
+</RustPlayground>
+
+---
+
+# Arrays: Iteration
+
+* Rust provides a way to iterate over collections, including arrays.
+* `a.iter()` produces an iterator, like a Java iterator
+  * `for` calls `.next()` on the iterator until no elements are left
+
+<RustPlayground top="187px">
+
+```rust
+fn main() {
+    let a = [10, 20, 30, 40, 50];
+    for element in a.iter() {
+        println!("the value is: {}", element);
+    }
+}
+```
+
+</RustPlayground>
+
+---
+
+# Quiz 4: Will this function type check?
+
+<RustPlayground>
+
+```rust
+// A. Yes
+// B. No
+
+fn f(n: [u32]) -> u32 {
+    n[0]
+}
+
+fn main() {}
 ```
 
 </RustPlayground>
