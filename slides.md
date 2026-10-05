@@ -260,3 +260,157 @@ layout: section
 # Rust Basics
 
 ---
+layout: default
+---
+
+# Factorial
+
+<RustPlayground>
+
+```rust
+fn fact(n: u32) -> u32 {
+    if n == 0 {
+        1
+    } else {
+        let x = fact(n - 1);
+        n * x
+    }
+}
+
+fn main() {
+    let res = fact(6);
+    println!("fact(6) = {res}");
+}
+```
+
+</RustPlayground>
+
+---
+
+# If **expressions**
+
+<RustPlayground>
+
+```rust
+fn main() {
+    let n = 5;
+    if n < 0 {
+        println!("{n} is negative");
+    } else if n > 0 {
+        println!("{n} is positive");
+    } else {
+        println!("{n} is zero");
+    }
+
+    let x = if n < 0 {
+        10
+    } else {
+        20
+        // "a"
+    };
+    println!("x = {x:?}");
+}
+```
+
+</RustPlayground>
+
+---
+
+# Let statements
+
+<RustPlayground>
+
+```rust
+fn main() {
+    let x = 5;              // Type inferred as i32.
+    println!("x = {}", x);  // printf-style formatting
+
+    // Cannot assign to an immutable variable.
+    // x = x + 1;
+
+    // Shadow the earlier binding.
+    let x = "hello";
+    println!("shadowed: x = {}", x);
+    println!("");
+
+    // Explicit type annotation OK.
+    let a: i32 = 5;
+    println!("a = {}", a);
+
+    // Assigning to a variable only allowed if mut
+    let mut a = 5;
+    a = a + 1;
+    println!("mutable: a = {}", a);
+}
+```
+
+</RustPlayground>
+
+---
+
+# Quiz 1: What does this print?
+
+<RustPlayground>
+
+```rust
+// A. 6
+// B. 7
+// C. 5
+// D. Error
+
+fn main() {
+    let x = 6;
+    let y = "hi";
+    if x == 5 { y } else { 5 };
+    println!("{}", 7);
+}
+```
+
+</RustPlayground>
+
+---
+
+# Quiz 2: What does this print?
+
+<RustPlayground>
+
+```rust
+// A. 6
+// B. true
+// C. false
+// D. error
+
+#[allow(warnings)]
+fn main() {
+    let x = 6;
+    let y = 4;
+    let x = 8;
+    println!("{}", x == 10 - y);
+}
+```
+
+</RustPlayground>
+
+---
+
+# Quiz 3: What does this print?
+
+<RustPlayground>
+
+```rust
+// A. 1
+// B. 6
+// C. 0
+// D. error
+
+#[allow(warnings)]
+fn main() {
+    let mut x = 1;
+    for i in 1..6 {
+        let x = x + 1;
+    }
+    println!("{}", x);
+}
+```
+
+</RustPlayground>
