@@ -50,6 +50,12 @@ layout: two-cols-header
 - Auto memory management via garbage collection
   - No explicit `malloc`/`free`
 
+<style>
+.two-cols-header {
+  grid-template-columns: 45% 55%;
+}
+</style>
+
 ---
 
 # Rust: Type-safe (and Thread-safe), and Fast
@@ -82,44 +88,175 @@ layout: two-cols-header
 
 # Features of Rust
 
-- Lifetimes and Ownership
-  - Key feature for ensuring safety
-- Traits as core of object(-like) system
-- Variable default is immutability
+Like Haskell
+- Variables are immutable by default
 - Data types and pattern matching
+- First-class functions
+
+&nbsp;
 - Type inference
   - No need to write types for local variables
 - Generics (aka parametric polymorphism)
-- First-class functions
+- Traits as core of object(-like) system
+- Lifetimes and Ownership
+  - Key feature for ensuring safety
 - Efficient C bindings
 
 > Takes ideas from functional and OO languages, and recent research
 
 ---
-
-# Why Rust?
-
-- Memory safety without garbage collection
-- Predictable performance
-- Fearless concurrency
-
----
-references:
-  - "The Rust Programming Language — https://doc.rust-lang.org/book/"
+layout: two-cols-header
 ---
 
-# A Small Example
+# Information on Rust
 
-```rust {all|1|2-4|all}
+::left::
+
+<img src="/images/rust-book-cover.jpg" alt="The Rust Programming Language book cover" class="h-80 max-w-full object-contain" />
+
+::right::
+
+- Rust book free online
+  - https://doc.rust-lang.org/book/
+  - **We will follow it in lectures**
+
+- More references via Rust site
+  - https://doc.rust-lang.org/stable/
+
+- Standard library documentation
+  - https://docs.rs/std/
+
+- Rust Playground
+  - https://play.rust-lang.org/
+
+<style>
+.two-cols-header {
+  grid-template-columns: 30% 70%;
+}
+</style>
+
+---
+
+# Installing Rust
+
+- Instructions: https://rust-lang.org/tools/install/
+
+- On Mac, Linux, or WSL, open a terminal and run
+    ```sh
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    ```
+
+- On Windows, download and run `rustup-init.exe`
+  - [Download rustup-init.exe for x86_64](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe)
+
+---
+
+# Rust compiler, build system (demo)
+
+- Rust programs can be compiled using `rustc`
+  - Source files end in suffix `.rs`
+  - Compilation, by default, produces an executable
+    - No `-c` option
+
+- Preferred: Use the `cargo` package manager
+  - Will invoke `rustc` as needed to build files
+  - Will download and build dependencies
+  - Based on a `.toml` file and `.lock` file
+    - You won't have to mess with these for this class
+
+---
+
+# Using rustc (demo) (hide?)
+
+- Compiling and running a program
+
+`hello.rs`:
+
+```rust
 fn main() {
-    let message = String::from("Hello, Rust!");
-    println!("{message}");
+    println!("Hello, world!")
 }
 ```
 
+```shellsession
+$ rustc hello.rs
+$ ./hello
+Hello, world!
+```
+
 ---
-layout: center
-class: text-center
+layout: two-cols-header
 ---
 
-# Questions?
+# Using cargo (demo)
+
+::left::
+
+Make a project, build it, run it
+
+```shellsession
+$ cargo new hello
+$ cd hello
+$ eza -T
+.
+├── Cargo.toml
+└── src
+    └── main.rs
+$ cargo build
+   Compiling hello v0.1.0 (/path/to/hello)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.64s
+$ ./target/debug/hello
+Hello, world!
+$ # or
+$ cargo run
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running `/another/path/to/hello`
+Hello, world!
+```
+
+::right::
+
+`src/main.rs`:
+
+```rust
+fn main() {
+    println!("Hello, world!")
+}
+```
+
+> We can use cargo to run tests too; will discuss later.
+
+[More on Cargo](https://doc.rust-lang.org/stable/cargo/getting-started/first-steps.html)
+
+---
+layout: image-right-full
+image: /images/rust-playground.png
+alt: Rust Playground editor and execution output showing Hello, world!
+---
+
+# Rust, interactively
+
+- Rust is a compiled language and has no REPL like Python or Haskell
+
+- There is an in-browser execution environment
+  - https://play.rust-lang.org/
+
+---
+
+# Rust Documentation
+
+- Rust documentation is a good reference, and way to learn
+  - https://doc.rust-lang.org/stable/
+
+- This contains links to
+  - the Rust Book (on which most of our slides are based),
+  - the reference manual, and
+  - short manuals on the compiler, cargo, and more
+
+---
+layout: section
+---
+
+# Rust Basics
+
+---
