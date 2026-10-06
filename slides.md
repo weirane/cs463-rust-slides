@@ -14,6 +14,8 @@ routerMode: hash
 
 CS 463
 
+Slide credit: Michael Hicks CMSC 330
+
 <!--
 Speaker notes go here.
 -->
@@ -69,23 +71,6 @@ layout: two-cols-header
 
 ---
 
-# Rust in the Real World
-
-- [Modern command-line tools rewritten in Rust](https://inrust.dev/)
-  - `ls` → `eza`, `cat` → `bat`, `find` → `fd`, `grep` → `ripgrep`
-
-- [OpenAI Codex](https://github.com/openai/codex)
-  <img src="/images/codex-language-breakdown.png" alt="Codex repository language breakdown: Rust 97.3%, Python 2.2%, Starlark 0.2%, TypeScript 0.1%, PowerShell 0.1%, Shell 0.1%" width="175" class="mt-3" />
-
-- [Rust in **Android**: move fast and fix things](https://blog.google/security/rust-in-android-move-fast-fix-things/) (Nov. 2025)
-
-- [Writing **Linux kernel** code in Rust is no longer experimental](https://lwn.net/Articles/1050174/) (Dec. 2025)
-
-- [Rust Is Tier-1 Language at **Microsoft**](https://rustfoundation.org/media/guest-post-rust-is-tier-1-language-at-microsoft/) (Sep. 2026)
-  - Alongside C++, C#, and TypeScript
-
----
-
 # Features of Rust
 
 Like Haskell
@@ -103,6 +88,23 @@ Like Haskell
 - Efficient C bindings
 
 > Takes ideas from functional and OO languages, and recent research
+
+---
+
+# Rust in the Real World
+
+- [Modern command-line tools rewritten in Rust](https://inrust.dev/)
+  - `ls` → `eza`, `cat` → `bat`, `find` → `fd`, `grep` → `ripgrep`
+
+- [OpenAI Codex](https://github.com/openai/codex)
+  <img src="/images/codex-language-breakdown.png" alt="Codex repository language breakdown: Rust 97.3%, Python 2.2%, Starlark 0.2%, TypeScript 0.1%, PowerShell 0.1%, Shell 0.1%" width="175" class="mt-3" />
+
+- [Rust in **Android**: move fast and fix things](https://blog.google/security/rust-in-android-move-fast-fix-things/) (Nov. 2025)
+
+- [Writing **Linux kernel** code in Rust is no longer experimental](https://lwn.net/Articles/1050174/) (Dec. 2025)
+
+- [Rust Is Tier-1 Language at **Microsoft**](https://rustfoundation.org/media/guest-post-rust-is-tier-1-language-at-microsoft/) (Sep. 2026)
+  - Alongside C++, C#, and TypeScript
 
 ---
 layout: two-cols-header
@@ -242,6 +244,8 @@ alt: Rust Playground editor and execution output showing Hello, world!
   - https://play.rust-lang.org/
 
 ---
+hide: true
+---
 
 # Rust Documentation
 
@@ -285,9 +289,13 @@ fn main() {
 
 </RustPlayground>
 
+<!--
+introduce functions, argument and return type, last expression as value, main function, print
+-->
+
 ---
 
-# If ***expressions***
+# If *expressions*
 
 <RustPlayground>
 
@@ -344,6 +352,10 @@ fn main() {
 ```
 
 </RustPlayground>
+
+<!--
+shadowing, type annotation, mut
+-->
 
 ---
 
@@ -556,3 +568,68 @@ fn main() {}
 ```
 
 </RustPlayground>
+
+---
+
+# Testing
+
+- In any language, there is the need to test code
+- In most languages, testing requires extra libraries:
+  - JUnit in Java, HUnit in Haskell
+- Testing in Rust is a first-class citizen!
+  - The testing framework is built into cargo
+
+---
+
+# Unit Testing in Rust
+
+- Unit testing is for local or private functions
+  - Put such tests in the same file as your code
+- Use `assert!` to test that something is true
+- Use `assert_eq!` to test that two things that implement the `PartialEq` trait are equal
+  - E.g., integers, booleans, arrays, etc.
+
+<RustPlayground top="240px">
+
+```rust
+pub fn my_function() -> i32 { 4 }
+
+#[cfg(test)] // Include this module when compiling tests.
+mod tests {
+    use super::my_function;
+
+    #[test] // Mark this function as a test.
+    fn it_works() {
+        assert_eq!(my_function(), 4);
+    }
+}
+```
+
+</RustPlayground>
+
+---
+
+# Running Tests
+
+- `cargo test` runs all of your tests
+- `cargo test s` runs all tests that contain `s` in the name
+- By default, console output from passing tests is hidden
+  - Use `cargo test -- --nocapture` to show it
+
+---
+layout: section
+---
+
+# Ownership
+
+---
+
+foo
+
+---
+layout: section
+---
+
+# Functional language features
+
+Chapter 13
