@@ -96,7 +96,7 @@ Like Haskell
 - [Modern command-line tools rewritten in Rust](https://inrust.dev/)
   - `ls` → `eza`, `cat` → `bat`, `find` → `fd`, `grep` → `ripgrep`
 
-- [OpenAI Codex](https://github.com/openai/codex)
+- [OpenAI Codex CLI](https://github.com/openai/codex)
   <img src="/images/codex-language-breakdown.png" alt="Codex repository language breakdown: Rust 97.3%, Python 2.2%, Starlark 0.2%, TypeScript 0.1%, PowerShell 0.1%, Shell 0.1%" width="175" class="mt-3" />
 
 - [Rust in **Android**: move fast and fix things](https://blog.google/security/rust-in-android-move-fast-fix-things/) (Nov. 2025)
@@ -151,6 +151,12 @@ layout: two-cols-header
 - On Windows, download and run `rustup-init.exe`
   - [Download rustup-init.exe for x86_64](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe)
 
+<!--
+here's the resources
+-->
+
+---
+hide: true
 ---
 
 # Rust compiler, build system (demo)
@@ -166,6 +172,8 @@ layout: two-cols-header
   - Based on a `.toml` file and `.lock` file
     - You won't have to mess with these for this class
 
+---
+hide: true
 ---
 
 # Using rustc (demo) (hide?)
@@ -190,7 +198,7 @@ Hello, world!
 layout: two-cols-header
 ---
 
-# Using cargo (demo)
+# Build system: cargo (demo)
 
 ::left::
 
@@ -230,6 +238,10 @@ fn main() {
 
 [More on Cargo](https://doc.rust-lang.org/stable/cargo/getting-started/first-steps.html)
 
+<!--
+todo: quick subcommand summary
+-->
+
 ---
 layout: image-right-full
 image: /images/rust-playground.png
@@ -263,6 +275,8 @@ layout: section
 
 # Rust Basics
 
+Chapter 3
+
 ---
 layout: default
 ---
@@ -295,7 +309,7 @@ introduce functions, argument and return type, last expression as value, main fu
 
 ---
 
-# If *expressions*
+# If expressions
 
 <RustPlayground>
 
@@ -457,7 +471,7 @@ layout: two-cols-header
 
 ---
 
-# Compound Data: Tuples (hide?)
+# Compound Data: Tuples
 
 - n-tuple type `(t1, …, tn)`
 
@@ -477,7 +491,7 @@ let (x, y, z) = tuple;
 
 ---
 
-# Compound Data: Tuples (hide?)
+# Compound Data: Tuples
 
 <RustPlayground>
 
@@ -622,9 +636,154 @@ layout: section
 
 # Ownership
 
+Chapter 4
+
 ---
 
-foo
+# Memory: the Stack and the Heap
+
+- The stack
+  - Constant-time, automatic allocation and deallocation
+  - Data size and lifetime must be known at compile time
+    - Function parameters and locals of known (constant) size
+
+<v-clicks>
+
+- The heap
+  - Dynamically sized data, with non-fixed lifetime
+    - Slightly slower to access than stack data: via a pointer
+
+- Memory management
+  - Manual deallocation (C/C++): low overhead, but opportunities for devastating bugs
+    - Dangling pointers and double frees are instances of memory corruption
+  - Garbage collection (Java, Haskell): automatic deallocation, adds space/time overhead
+
+</v-clicks>
+
+---
+layout: two-cols-header
+---
+
+# Memory: the Stack and the Heap
+
+::left::
+
+**C**
+
+```c
+char *p = malloc(10);
+// ...
+free(p);
+```
+
+<v-click>
+
+**Java**
+
+```java
+String p = new String("hello");
+// ...
+p = null; // GC will collect later
+```
+
+`p` is removed from the stack when the function terminates.
+
+<Arrow x1="315" y1="331" x2="648" y2="322" width="2.5" color="#ef4444" />
+
+</v-click>
+
+::right::
+
+<img src="/images/ownership-stack-heap.svg" alt="A pointer p on the stack refers to allocated data on the heap" class="h-70 mx-auto" />
+
+---
+
+# Memory Management Errors (in C)
+
+- May forget to free memory (**memory leak**)
+
+```c
+{
+    int *x = (int *) malloc(sizeof(int));
+}
+```
+
+<v-click>
+
+- May retain a pointer to freed memory (**dangling pointer**)
+
+```c
+{
+    int *x = (int *) malloc(sizeof(int));
+    free(x);
+    *x = 5; /* oops! */
+}
+```
+
+</v-click>
+
+<v-click>
+
+- May try to free something twice (**double free**)
+
+```c
+{ 
+    int *x = (int *) malloc(sizeof(int));
+    free(x);
+    free(x);
+}
+```
+
+</v-click>
+
+<!--
+these errors may be obvious in small examples, but can be subtle in large programs
+-->
+
+---
+
+# Rust: GC-less Memory Management, Safely
+
+- Rust's heap memory is managed without garbage collection
+- Type checking ensures no dangling pointers or double frees
+  - Unsafe idioms are disallowed in safe Rust
+  - Memory leaks are not prevented (not a memory-safety problem)
+
+- Key features of Rust that ensure safety: **ownership and lifetimes**
+  - Data has a single owner. Immutable aliases are OK, but mutation only via the owner or a single mutable reference
+  - How long data is alive is determined by a lifetime
+
+---
+layout: two-cols-header
+---
+
+# Memory: the Stack and the Heap
+
+::left::
+
+**Rust**
+
+```rust
+{
+    let p = String::from("hello");
+    // ...
+}
+```
+
+- Heap data is freed when the owner `p` goes out of scope
+- No manual `free`, no garbage collection
+
+`p` is removed from the stack when the function terminates.
+
+::right::
+
+<img src="/images/ownership-stack-heap.svg" alt="The owner p on the stack refers to String data on the heap" class="h-70 mx-auto" />
+
+<style>
+.two-cols-header {
+  grid-template-columns: 55% 45%;
+}
+</style>
 
 ---
 layout: section
