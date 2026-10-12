@@ -1,4 +1,5 @@
 node_modules
+skills-lock.json
 .pnpm-store
 .DS_Store
 dist
