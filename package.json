@@ -5,8 +5,8 @@
   "scripts": {
     "build": "slidev build",
     "dev": "slidev",
-    "export": "slidev export --wait 500 --per-slide",
-    "build:mason": "slidev build --base /~rwang29/talks/rust/ --without-notes"
+    "export": "node --import ./scripts/export-playground.mjs ./node_modules/@slidev/cli/bin/slidev.mjs export --wait 500 --per-slide",
+    "build:mason": "slidev build --base /~rwang29/talks/cs463-rust/ --without-notes"
   },
   "dependencies": {
     "@slidev/cli": "^52.14.1",

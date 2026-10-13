@@ -8,5 +8,7 @@ dist
 .remote-assets
 components.d.ts
 slides-export.pdf
+upload.sh
+plan.md
 .agents/
 refs/

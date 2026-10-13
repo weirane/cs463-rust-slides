@@ -18,3 +18,10 @@ pnpm build
 pnpm export
 ```
 
+The export script dismisses the Rust Playground multiple-file announcement in
+the export browser. Slidev export options can still be passed through, for example:
+
+```bash
+pnpm export --range 1-5
+```
+
