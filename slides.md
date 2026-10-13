@@ -14,7 +14,12 @@ routerMode: hash
 
 CS 463
 
+<div class="text-xs">
+
+Slide source: https://github.com/weirane/cs463-rust-slides/ <br/>
 Slide credit: Michael Hicks CMSC 330
+
+</div>
 
 <!--
 Speaker notes go here.
@@ -372,18 +377,19 @@ shadowing, type annotation, mut
 -->
 
 ---
+clicks: 1
+---
 
 # Quiz 1: What does this print?
 
-<RustPlayground>
+A. 6 <br/>
+B. 7 <br/>
+C. 5 <br/>
+<span :class="{ 'font-bold': $clicks >= 1 }">D. Error</span> <v-click><span class="ml-[16px]">✅</span></v-click>
+
+<RustPlayground top="200px">
 
 ```rust
-/* A. 6
- * B. 7
- * C. 5
- * D. Error
- */
-
 fn main() {
     let x = 6;
     let y = "hi";
@@ -395,18 +401,19 @@ fn main() {
 </RustPlayground>
 
 ---
+clicks: 1
+---
 
 # Quiz 2: What does this print?
 
-<RustPlayground>
+A. 6 <br/>
+B. true <br/>
+<span :class="{ 'font-bold': $clicks >= 1 }">C. false</span> <v-click><span class="ml-[19px]">✅</span></v-click> <br/>
+D. error
+
+<RustPlayground top="200px">
 
 ```rust
-/* A. 6
- * B. true
- * C. false
- * D. error
- */
-
 #[allow(warnings)]
 fn main() {
     let x = 6;
@@ -419,18 +426,19 @@ fn main() {
 </RustPlayground>
 
 ---
+clicks: 1
+---
 
 # Quiz 3: What does this print?
 
-<RustPlayground>
+<span :class="{ 'font-bold': $clicks >= 1 }">A. 1</span> <v-click><span class="ml-[47px]">✅</span></v-click> <br/>
+B. 6 <br/>
+C. 0 <br/>
+D. error
+
+<RustPlayground top="200px">
 
 ```rust
-/* A. 1
- * B. 6
- * C. 0
- * D. error
- */
-
 #[allow(warnings)]
 fn main() {
     let mut x = 1;
@@ -565,15 +573,17 @@ fn main() {
 </RustPlayground>
 
 ---
+clicks: 1
+---
 
 # Quiz 4: Will this function type check?
 
-<RustPlayground>
+A. Yes <br/>
+<span :class="{ 'font-bold': $clicks >= 1 }">B. No</span> <v-click><span class="ml-[21px]">✅</span></v-click>
+
+<RustPlayground top="150px">
 
 ```rust
-// A. Yes
-// B. No
-
 fn f(n: [u32]) -> u32 {
     n[0]
 }
@@ -639,28 +649,6 @@ layout: section
 Chapter 4
 
 ---
-
-# Memory: the Stack and the Heap
-
-- The stack
-  - Constant-time, automatic allocation and deallocation
-  - Data size and lifetime must be known at compile time
-    - Function parameters and locals of known (constant) size
-
-<v-clicks>
-
-- The heap
-  - Dynamically sized data, with non-fixed lifetime
-    - Slightly slower to access than stack data: via a pointer
-
-- Memory management
-  - Manual deallocation (C/C++): low overhead, but opportunities for devastating bugs
-    - Dangling pointers and double frees are instances of memory corruption
-  - Garbage collection (Java, Haskell): automatic deallocation, adds space/time overhead
-
-</v-clicks>
-
----
 layout: two-cols-header
 ---
 
@@ -668,7 +656,41 @@ layout: two-cols-header
 
 ::left::
 
+- The stack
+  - Constant-time, automatic allocation and deallocation
+  - Data size and lifetime must be known at compile time
+    - Function parameters and locals of known (constant) size
+
+<v-click>
+
+- The heap
+  - Dynamically sized data, with non-fixed lifetime
+    - Slightly slower to access than stack data: via a pointer
+
+</v-click>
+
+::right::
+
+<img src="/images/ownership-stack-heap.svg" alt="A pointer p on the stack refers to allocated data on the heap" class="h-70 mx-auto" />
+
+<style>
+.two-cols-header {
+  grid-template-columns: 55% 45%;
+}
+</style>
+
+---
+layout: two-cols-header
+---
+
+# Memory Management
+
+::left::
+
 **C**
+
+- Manual deallocation (C/C++): low overhead, but opportunities for devastating bugs
+  - Dangling pointers and double frees are instances of memory corruption
 
 ```c
 char *p = malloc(10);
@@ -676,9 +698,26 @@ char *p = malloc(10);
 free(p);
 ```
 
-<v-click>
+::right::
+
+<img src="/images/ownership-stack-heap.svg" alt="A pointer p on the stack refers to allocated data on the heap" class="h-70 mx-auto" />
+
+<style>
+.two-cols-header {
+  grid-template-columns: 55% 45%;
+}
+</style>
+
+---
+layout: two-cols-header
+---
+
+# Memory Management
+
+::left::
 
 **Java**
+- Garbage collection (Java, Haskell): automatic deallocation, adds space/time overhead
 
 ```java
 String p = new String("hello");
@@ -688,13 +727,17 @@ p = null; // GC will collect later
 
 `p` is removed from the stack when the function terminates.
 
-<Arrow x1="315" y1="331" x2="648" y2="322" width="2.5" color="#ef4444" />
-
-</v-click>
+<Arrow x1="345" y1="247" x2="668" y2="312" width="1.5" color="#ef4444" />
 
 ::right::
 
 <img src="/images/ownership-stack-heap.svg" alt="A pointer p on the stack refers to allocated data on the heap" class="h-70 mx-auto" />
+
+<style>
+.two-cols-header {
+  grid-template-columns: 55% 45%;
+}
+</style>
 
 ---
 
@@ -745,16 +788,18 @@ these errors may be obvious in small examples, but can be subtle in large progra
 # Rust: GC-less Memory Management, Safely
 
 - Rust's heap memory is managed without garbage collection
-- Type checking ensures no dangling pointers or double frees
+
+- The compiler ensures no dangling pointers or double frees
   - Unsafe idioms are disallowed in safe Rust
   - Memory leaks are not prevented (not a memory-safety problem)
 
-- Key features of Rust that ensure safety: **ownership and lifetimes**
+- Key features of Rust that ensure safety: **ownership** and **lifetimes**
   - Data has a single owner. Immutable aliases are OK, but mutation only via the owner or a single mutable reference
   - How long data is alive is determined by a lifetime
 
 ---
 layout: two-cols-header
+hide: true
 ---
 
 # Memory: the Stack and the Heap
@@ -784,6 +829,378 @@ layout: two-cols-header
   grid-template-columns: 55% 45%;
 }
 </style>
+
+---
+
+# Ownership Rules
+
+1. Each value in Rust has an owner
+2. There can only be **one owner at a time**
+3. When the owner goes **out of scope**, the value is **dropped** (resources freed, can no longer be accessed)
+
+<!--
+- Only one **owner** of a value at a time.
+- When the owner goes out of scope, its data is automatically freed; no garbage collection
+- Cannot access a value beyond its lifetime (checked at compile time)
+-->
+
+<RustPlayground top="190px">
+
+```rust
+fn foo() {
+    let mut s = String::from("hello");
+    s.push_str(", world!");
+    println!("{}", s);
+    // s owns the string on the heap.
+} // s is dropped; its heap buffer is freed.
+
+fn main() {
+    foo();
+}
+```
+
+</RustPlayground>
+
+---
+hide: true
+---
+
+# Rules of Ownership
+
+1. Each value in Rust has an owner
+
+<v-clicks>
+
+2. There can only be **one owner at a time**
+
+3. When the owner goes **out of scope**, the value is **dropped** (and its owned resources are freed)
+
+</v-clicks>
+
+---
+
+# Ownership Transfer: Variable Assignment
+
+- `let y = x` **moves** the `String` from `x` to `y`; its heap buffer stays in place
+- After the move, `y` is the only owner and `x` can no longer be used
+- Only `y` frees the buffer when dropped: prevents a **double free**
+
+<RustPlayground top="185px">
+
+```rust
+fn main() {
+    let x = String::from("hello");
+
+    let y = x; // Ownership moves from x to y.
+
+    println!("{}, world!", y); // OK
+    // println!("{}, world!", x); // Error: x was moved.
+}
+```
+
+</RustPlayground>
+
+<!--
+Ownership may be **transferred** (moved) to another variable or function parameter
+-->
+
+---
+
+# Ownership Transfer: Function Calls
+
+- Passing a `String` by value moves ownership from the argument to the function's parameter
+- Returning it moves ownership from the function to the caller's receiving variable
+
+<RustPlayground top="170px">
+
+```rust
+fn main() {
+    let s1 = String::from("hello");
+
+    let s2 = id(s1); // s1 moves to the parameter; the result moves to s2.
+
+    println!("{}", s2); // OK
+    // println!("{}", s1); // Error: s1 was moved.
+}
+
+fn id(s: String) -> String {
+    s // Move s back to the caller.
+}
+```
+
+</RustPlayground>
+
+---
+
+# Deep Copying Retains Ownership
+
+- `.clone()` creates an independent `String` and heap buffer; the original stays usable
+- Types implementing **`Copy`** copy automatically: `i32`, `char`, `bool`, `f32`, and tuples of `Copy` types
+
+<RustPlayground top="170px">
+
+```rust
+fn main() {
+    let x = String::from("hello");
+    let y = x.clone(); // Clone instead of moving x.
+    println!("{}, world!", y); // OK
+    println!("{}, world!", x); // OK: x still owns its buffer.
+
+    let x = 5;
+    let y = x; // i32 implements Copy, so clone happens automatically.
+    println!("{} = 5!", y); // OK
+    println!("{} = 5!", x); // OK: x was copied, not moved.
+}
+```
+
+</RustPlayground>
+
+---
+
+# References and Borrowing
+
+- A reference is an explicit, **non-owning pointer** to the original value
+- Creating a reference with `&` is called **borrowing**; ownership stays with the original owner
+- **Shared references** (`&T`) do not permit mutation through the reference
+  - Even if the original owner is mutable (defined with `let mut`)
+
+<RustPlayground top="210px">
+
+```rust
+fn main() {
+    let s1 = String::from("hello");
+    let len = calc_len(&s1); // Borrow s1; do not move it.
+    println!("the length of '{}' is {}", s1, len); // s1 is still usable.
+}
+
+fn calc_len(s: &String) -> usize {
+    // s.push_str("hi"); // Error: cannot mutate through a shared reference.
+    s.len()
+} // The borrow ends; the String is not dropped here.
+```
+
+</RustPlayground>
+
+<!-- 
+but it would be inconvenient to have to clone a String every time we want to use it
+-->
+
+---
+hide: true
+---
+
+# Quiz 1: Who Owns `s`'s Data at HERE?
+
+A. `x` <br/>
+B. `y` <br/>
+<span :class="{ 'font-bold': $clicks >= 1 }">C. `z`</span> <v-click><span class="ml-[18px]">✅</span></v-click> <br/>
+D. `w`
+
+```rust
+fn foo(s: String) -> usize {
+    let x = s;
+    let y = &x;
+    let z = x;
+    let w = &z;
+    // HERE
+}
+```
+
+---
+
+# Mutable references
+
+- To permit mutation via a reference, use `&mut`
+  - Instead of just `&`
+  - But only OK for mutable variables (`let mut`)
+
+<RustPlayground top="185px">
+
+```rust
+fn main() {
+    let mut s1 = String::from("hello");
+    {
+        let s2 = &s1;
+        s2.push_str(" there"); // Error: s2 is a shared reference.
+        println!("String is {}", s2);
+    }
+
+    let s3 = &mut s1;
+    s3.push_str(" there"); // OK: s3 is a mutable reference.
+    println!("String is {}", s3);
+}
+```
+
+</RustPlayground>
+
+---
+
+# Rules of References
+
+1. At any given time, you can have _either but not both of_
+    - One mutable reference
+    - Any number of immutable references
+
+2. References must always be valid (pointed-to value not dropped)
+
+---
+
+# Quiz 2: What Does This Evaluate To?
+
+A. `"Hello!"` <br/>
+B. `"Hello! World!"` <br/>
+<span :class="{ 'font-bold': $clicks >= 1 }">C. Error</span> <v-click><span class="ml-[120px]">✅ — `s2` is a shared reference, so it cannot mutate the string</span></v-click> <br/>
+D. `"Hello!World!"`
+
+<RustPlayground top="200px">
+
+```rust
+fn main() {
+    let mut s1 = String::from("Hello!");
+    {
+        let s2 = &s1;
+        s2.push_str("World!");
+        println!("{}", s2);
+    }
+}
+```
+
+</RustPlayground>
+
+---
+
+# Quiz 3: What Is Printed?
+
+A. 0 <br/>
+<span :class="{ 'font-bold': $clicks >= 1 }">B. 8</span> <v-click><span class="ml-[50px]">✅ — `foo` appends `"Bob"`, making `"AliceBob"` (length 8).</span></v-click> <br/>
+C. Error <br/>
+D. 5
+
+<RustPlayground top="200px">
+
+```rust
+fn foo(s: &mut String) -> usize {
+    s.push_str("Bob");
+    s.len()  // last expression is the return value
+}
+
+fn main() {
+    let mut s1 = String::from("Alice");
+    println!("{}", foo(&mut s1));
+}
+```
+
+</RustPlayground>
+
+---
+
+# Dangling References
+
+- References must always point to **valid memory**
+  - Not to memory that has been dropped
+- Rust uses **lifetimes** to prevent references from outliving their referents
+
+<RustPlayground top="185px">
+
+```rust
+fn main() {
+    let ref_invalid = dangle();
+    println!("what will happen ... {}", ref_invalid);
+}
+
+fn dangle() -> &String {
+    let s1 = String::from("hello");
+    &s1 // Invalid: returning a reference to a local String.
+} // s1 is dropped and its heap buffer is freed.
+```
+
+</RustPlayground>
+
+---
+
+# Lifetimes: Preventing Dangling References
+
+- The value `x` goes out of scope before the reference `r` is used
+- A reference must not **outlive the value it refers to**
+
+<RustPlayground top="170px">
+
+```rust
+fn main() {
+    let r; // Deferred init             ←──┐ r defined
+    {              //                      │
+        let x = 5; // ←──┐ x defined       │
+        r = &x;    //    ├─ x's lifetime   │
+    }              // ←──┘ x dropped       ├─ r's lifetime
+                   //                      │
+    // Error: x no longer exists.          │
+    println!("r: {}", r); //               │
+}                         //            ←──┘ r dropped
+```
+
+</RustPlayground>
+
+---
+
+# Lifetimes and Functions (hide?)
+
+- A function's returned reference must remain valid in the caller
+- What if it refers to an argument that goes out of scope?
+
+<RustPlayground top="170px">
+
+```rust
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() { x } else { y }
+}
+
+fn main() {
+    let x = String::from("hi");
+    let z;
+    {
+        let y = String::from("there");
+        z = longest(&x, &y); // The longer string is y.
+    } // y is dropped; a reference to it cannot be used afterward.
+    println!("z = {}", z); // Error: y does not live long enough.
+}
+```
+
+</RustPlayground>
+
+---
+
+# Quiz 4: What Is Printed? (hide?)
+
+A. `dog` <br/>
+B. `hi` <br/>
+C. Error — `y` is immutable <br/>
+<span :class="{ 'font-bold': $clicks >= 1 }">D. Error — `y` is dropped while still borrowed</span> <v-click><span class="ml-[18px]">✅</span></v-click>
+
+<RustPlayground top="200px">
+
+```rust
+fn main() {
+    let mut s = &String::from("dog");
+    {
+        let y = String::from("hi");
+        s = &y;
+    }
+    println!("s: {}", s);
+}
+```
+
+</RustPlayground>
+
+---
+
+# Recap: Rules of References
+
+1. At any given time, you can have either but not both of
+   - One mutable reference
+   - Any number of immutable references
+
+2. References must always be valid
+   - A reference must never outlive its referent
 
 ---
 layout: section
