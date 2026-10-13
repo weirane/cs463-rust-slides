@@ -844,22 +844,14 @@ hide: true
 - Cannot access a value beyond its lifetime (checked at compile time)
 -->
 
-<RustPlayground top="190px">
-
 ```rust
 fn foo() {
     let mut s = String::from("hello");
     s.push_str(", world!");
-    println!("{}", s);
+    println!("{}", s); // hello, world!
     // s owns the string on the heap.
 } // s is dropped; its heap buffer is freed.
-
-fn main() {
-    foo();
-}
 ```
-
-</RustPlayground>
 
 ---
 hide: true
@@ -931,29 +923,36 @@ fn id(s: String) -> String {
 </RustPlayground>
 
 ---
+layout: two-cols-header
+---
 
 # Deep Copying Retains Ownership
 
 - `.clone()` creates an independent `String` and heap buffer; the original stays usable
+
 - Types implementing **`Copy`** copy automatically: `i32`, `char`, `bool`, `f32`, and tuples of `Copy` types
 
-<RustPlayground top="170px">
+::left::
 
+Cloning a `String`
 ```rust
-fn main() {
-    let x = String::from("hello");
-    let y = x.clone(); // Clone instead of moving x.
-    println!("{}, world!", y); // OK
-    println!("{}, world!", x); // OK: x still owns its buffer.
-
-    let x = 5;
-    let y = x; // i32 implements Copy, so clone happens automatically.
-    println!("{} = 5!", y); // OK
-    println!("{} = 5!", x); // OK: x was copied, not moved.
-}
+let x = String::from("hello");
+let y = x.clone();
 ```
 
-</RustPlayground>
+::right::
+
+`i32` implements `Copy`, so clone happens automatically
+```rust
+let x = 5;
+let y = x;
+```
+
+<style>
+.two-cols-header {
+  grid-template-columns: 45% 55%;
+}
+</style>
 
 ---
 
@@ -1019,16 +1018,21 @@ fn foo(s: String) -> usize {
 ```rust
 fn main() {
     let mut s1 = String::from("hello");
-    {
-        let s2 = &s1;
-        s2.push_str(" there"); // Error: s2 is a shared reference.
-        println!("String is {}", s2);
-    }
-
-    let s3 = &mut s1;
-    s3.push_str(" there"); // OK: s3 is a mutable reference.
-    println!("String is {}", s3);
+    let len = calc_len(&s1);
+    println!("the length of '{}' is {}", s1, len);
+    append(&mut s1); // Borrow s1 mutably; do not move it.
+    println!("after append: '{}'", s1);
+    // s1.push_str("!"); // implicit &mut
 }
+
+fn append(s: &mut String) {
+    s.push_str(" world"); // OK: can mutate through a mutable reference.
+}
+
+fn calc_len(s: &String) -> usize {
+    // s.push_str(" world"); // Error: cannot mutate through a shared reference.
+    s.len()
+} // The borrow ends; the String is not dropped here.
 ```
 
 </RustPlayground>
@@ -1100,21 +1104,12 @@ fn main() {
   - Not to memory that has been dropped
 - Rust uses **lifetimes** to prevent references from outliving their referents
 
-<RustPlayground top="185px">
-
 ```rust
-fn main() {
-    let ref_invalid = dangle();
-    println!("what will happen ... {}", ref_invalid);
-}
-
 fn dangle() -> &String {
     let s1 = String::from("hello");
     &s1 // Invalid: returning a reference to a local String.
 } // s1 is dropped and its heap buffer is freed.
 ```
-
-</RustPlayground>
 
 ---
 
