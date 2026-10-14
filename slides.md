@@ -393,8 +393,8 @@ C. 5 <br/>
 fn main() {
     let x = 6;
     let y = "hi";
-    if x == 5 { y } else { 5 };
-    println!("{}", 7);
+    let z = if x == 5 { y } else { 5 };
+    println!("{}", z);
 }
 ```
 
@@ -722,12 +722,12 @@ layout: two-cols-header
 ```java
 String p = new String("hello");
 // ...
-p = null; // GC will collect later
+p = null; // GC will collect this later
 ```
 
 `p` is removed from the stack when the function terminates.
 
-<Arrow x1="345" y1="247" x2="668" y2="312" width="1.5" color="#ef4444" />
+<Arrow x1="365" y1="247" x2="668" y2="312" width="1.5" color="#ef4444" />
 
 ::right::
 
@@ -1098,6 +1098,22 @@ fn main() {
 
 ---
 
+# Quiz 4: Is this code valid?
+
+```rust
+let mut s1 = String::from(“hello”);
+{ 
+    let s2 = &mut s1; //ok
+    let s3 = &mut s1; //fails: second borrow
+    s1.push_str(" there"); //fails: second borrow
+    s2.push_str(" world"); //ok
+}
+s1.push_str(" there"); //ok
+println!("String is {}", s1); //ok
+```
+
+---
+
 # Dangling References
 
 - References must always point to **valid memory**
@@ -1204,3 +1220,99 @@ layout: section
 # Functional language features
 
 Chapter 13
+
+---
+
+# Vectors and slices
+
+---
+
+# Closures
+
+- **Syntax**: <span class="font-mono">|<i>x1</i><span style="color: #808080">&#91;</span>: <i style="color: #ef3024">t1</i><span style="color: #808080">&#93;<sup>?</sup></span>, …, <i>xn</i><span style="color: #808080">&#91;</span>: <i style="color: #ef3024">tn</i><span style="color: #808080">&#93;<sup>?</sup></span>| <span style="color: #808080">&#91;</span>-> <i style="color: #ef3024">u</i><span style="color: #808080">&#93;<sup>?</sup></span> <i style="color: #ef3024">e</i></span>
+  - type annotations are inferred if absent
+  - `let add = |x: i32, y: i32| -> i32 { x + y }`
+  - `let add = |x, y| x + y`
+
+- **Evaluation**: a closure is a value
+
+- **Type checking**:
+  - Has type `t1 -> ... -> tn -> u`
+  - Not curried
+
+---
+layout: two-cols-header
+---
+
+# Using Closures/Functions Locally
+
+::left::
+
+**Rust**
+
+```rust {all|2,3}
+fn moveit(l: bool, x: i32) -> i32 {
+    let left  = |x| x - 1;
+    let right = |x| x + 1;
+    if l {
+        left(x)
+    } else {
+        right(x)
+    }
+}
+```
+
+::right::
+
+**Haskell**
+
+```haskell {all|3,4}
+moveit :: Bool -> Int -> Int
+moveit l x =
+  let left  = \x -> x - 1
+      right = \x -> x + 1
+  in if l
+     then left x
+     else right x
+```
+
+---
+
+# Iteration using the `Iterator` Trait
+
+- Recall an earlier example:
+
+```rust
+let a = vec![10, 20, 30, 40, 50];
+for e in a.iter() {
+    println!("the value is: {}", e);
+}
+```
+
+- The `iter()` method returns an **iterator**, a value implementing the `Iterator` trait
+
+```rust
+trait Iterator {
+    type Item; // An associated type
+    fn next(&mut self) -> Option<Self::Item>;
+    // … default method implementations
+}
+```
+
+---
+
+# `Iterator` Adaptors
+
+- We can make one iterator from another
+  - An iterator is **consumed as it is used**; it is **lazy**
+- This is a pattern for higher-order programming
+  - `i.map(f)` produces an iterator returning `f(e)` for each element `e` of `i`
+  - `i.filter(f)` produces an iterator containing elements `e` for which `f(e) == true`
+  - `i.collect()` collects an iterator into a collection, such as a `Vec`
+  - `i.fold(a, f)` is like Haskell's `foldl f a xs`
+    - `xs` is the list corresponding to `i`; `a` is the initial accumulator
+  - `zip`, `sum`, …
+
+---
+
+# Using Iterators
