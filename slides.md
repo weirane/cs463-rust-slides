@@ -16,8 +16,8 @@ CS 463
 
 <div class="text-xs">
 
-Slide source: https://github.com/weirane/cs463-rust-slides/ <br/>
-Slide credit: Michael Hicks CMSC 330
+<!--Slide source: https://github.com/weirane/cs463-rust-slides/ <br/>-->
+Slides built on: Michael Hicks CMSC 330
 
 </div>
 
@@ -57,23 +57,38 @@ layout: two-cols-header
 - Auto memory management via garbage collection
   - No explicit `malloc`/`free`
 
+<div v-click class="absolute bottom-30 left-0 w-full text-center text-2xl">
+Something in between ... ?
+</div>
+
 <style>
 .two-cols-header {
   grid-template-columns: 45% 55%;
 }
 </style>
 
+<!--
+at this point you've probably seen several programming languages, and they have different characteristics and can be used in different fields
+
+[click]
+can we keep c's performance and control, but also have safety of java and haskell?
+-->
+
 ---
 
 # Rust: Type-safe (and Thread-safe), and Fast
 
-- A Mozilla-sponsored, public project since 2010
-  - Started in 2006 by Graydon Hoare while at Mozilla
+- Started in 2006 by Graydon Hoare while at Mozilla
+  - A Mozilla-sponsored, public project since 2010
+  - Rust 1.0 released in 2015
+  - Rust Foundation established in 2021
 
-- Most loved programming language in Stack Overflow annual surveys every year from 2016 through 2021
+- Most loved/admired programming language in Stack Overflow annual surveys (2016 --- 2025)
 
 - Key properties: Type safety, and no data races, despite use of concurrency and manual memory management
 
+---
+hide: true
 ---
 
 # Features of Rust
@@ -127,6 +142,9 @@ layout: two-cols-header
   - https://doc.rust-lang.org/book/
   - **We will follow it in lectures**
 
+- Installation guide
+  - https://rust-lang.org/tools/install/
+
 - More references via Rust site
   - https://doc.rust-lang.org/stable/
 
@@ -142,6 +160,8 @@ layout: two-cols-header
 }
 </style>
 
+---
+hide: true
 ---
 
 # Installing Rust
@@ -200,6 +220,19 @@ Hello, world!
 ```
 
 ---
+layout: image-right-full
+image: /images/rust-playground.png
+alt: Rust Playground editor and execution output showing Hello, world!
+---
+
+# Rust, interactively
+
+- Rust is a compiled language and has no REPL like Python or Haskell
+
+- There is an in-browser execution environment
+  - https://play.rust-lang.org/
+
+---
 layout: two-cols-header
 ---
 
@@ -239,26 +272,17 @@ fn main() {
 }
 ```
 
-> We can use cargo to run tests too; will discuss later.
-
 [More on Cargo](https://doc.rust-lang.org/stable/cargo/getting-started/first-steps.html)
 
+&nbsp;
+* `cargo new <name>`: create a project
+* `cargo build`: build the project
+* `cargo run`: build & run the project
+* `cargo test`: run tests
+
 <!--
-todo: quick subcommand summary
+unset CARGO_TARGET_DIR
 -->
-
----
-layout: image-right-full
-image: /images/rust-playground.png
-alt: Rust Playground editor and execution output showing Hello, world!
----
-
-# Rust, interactively
-
-- Rust is a compiled language and has no REPL like Python or Haskell
-
-- There is an in-browser execution environment
-  - https://play.rust-lang.org/
 
 ---
 hide: true
@@ -283,44 +307,86 @@ layout: section
 Chapter 3
 
 ---
-layout: default
+layout: two-cols-header
 ---
 
 # Factorial example
 
-<RustPlayground>
+::left::
 
-```rust
-fn fact(n: u32) -> u32 {
+Rust
+
+```rust {all|1|2-7|3,6|10-13|12|all}
+fn fact(n: u32) -> u32 {   // function definition
     if n == 0 {
         1
     } else {
         let x = fact(n - 1);
-        n * x
+        n * x              // last expr in a block is its value
     }
 }
 
-fn main() {
+fn main() {                // main function, entry point
     let res = fact(6);
     println!("fact(6) = {res}");
 }
 ```
 
-</RustPlayground>
+<v-click>
+
+```
+fact(6) = 720
+```
+
+</v-click>
+
+::right::
+
+Haskell
+
+```haskell
+fact :: Integer -> Integer
+fact n =
+    if n == 0 then
+        1
+    else
+        let x = fact (n - 1)
+        in n * x
+
+
+main :: IO ()
+main = do
+    let res = fact 6
+    putStrLn ("fact(6) = " ++ show res)
+```
 
 <!--
-introduce functions, argument and return type, last expression as value, main function, print
+let's start with the factorial function. you may notice some similarities with haskell, because rust also borrows a lot of ideas from functional languages
+
+[click]
+functions: fn, takes unsigned 32bit, returns unsigned 32 bit integer
+
+[click]
+if expression
+
+[click]
+no returns? last expr in a block is its value
+
+[click]
+main function, entry point
+
+[click]
+println! macro, braces inserts value of res
 -->
 
 ---
 
 # If expressions
 
-<RustPlayground>
-
-```rust
+```rust {all|3-10|12-18}
 fn main() {
     let n = 5;
+    // if statements
     if n < 0 {
         println!("{n} is negative");
     } else if n > 0 {
@@ -329,17 +395,40 @@ fn main() {
         println!("{n} is zero");
     }
 
+    // if expressions
     let x = if n < 0 {
         10
     } else {
-        20
-        // "a"
+        "a" // compile error
     };
     println!("x = {x:?}");
 }
 ```
 
-</RustPlayground>
+<div v-click="2" class="absolute left-80 top-85 z-10 text-sm">
+
+$$
+\textcolor{#00ad45}{\text{Ty-if}}\quad
+\frac{
+  \Gamma \vdash a : \mathbb{B}
+  \qquad \Gamma \vdash b : T
+  \qquad \Gamma \vdash c : T
+}{
+  \Gamma \vdash \text{if}\ a\ b\ c : T
+}
+$$
+
+</div>
+
+<!--
+let's go back to if expressions
+
+[click]
+rust supports regular if statements you find in java and many other languages. the first example looks familiar: we check n and print one of the messages
+
+[click]
+rust's if can also produce a value. so we need to make sure its branches have the same type.
+-->
 
 ---
 
@@ -350,7 +439,7 @@ fn main() {
 ```rust
 fn main() {
     let x = 5;              // Type inferred as i32.
-    println!("x = {}", x);  // printf-style formatting
+    println!("x = {}", x);
 
     // Cannot assign to an immutable variable.
     // x = x + 1;
@@ -373,6 +462,10 @@ fn main() {
 </RustPlayground>
 
 <!--
+we used let to give the result of an expression a name. let's look at some of the features of let statements
+
+if you just write "let x" again, it will create a new variable shadow the previous one
+
 shadowing, type annotation, mut
 -->
 
@@ -383,7 +476,7 @@ clicks: 1
 # Quiz 1: What does this print?
 
 A. 6 <br/>
-B. 7 <br/>
+B. hi <br/>
 C. 5 <br/>
 <span :class="{ 'font-bold': $clicks >= 1 }">D. Error</span> <v-click><span class="ml-[16px]">✅</span></v-click>
 
@@ -399,6 +492,10 @@ fn main() {
 ```
 
 </RustPlayground>
+
+<!--
+Let's check our understanding with a few short examples. Take a moment to think before we reveal the answer.
+-->
 
 ---
 clicks: 1
@@ -442,7 +539,7 @@ D. error
 #[allow(warnings)]
 fn main() {
     let mut x = 1;
-    for i in 1..6 {
+    for i in 1..6 {  // 1..6 --> 1, 2, 3, 4, 5
         let x = x + 1;
     }
     println!("{}", x);
@@ -541,7 +638,7 @@ fn main() {
 
     // Only mutable arrays can be modified
     let mut xs = [1, 2, 3];
-    xs[0] = 1;
+    xs[0] = -1;
     println!("xs = {xs:?}");
 
     // out-of-bounds panic
@@ -610,7 +707,7 @@ fn main() {}
 - Unit testing is for local or private functions
   - Put such tests in the same file as your code
 - Use `assert!` to test that something is true
-- Use `assert_eq!` to test that two things that implement the `PartialEq` trait are equal
+- Use `assert_eq!` to test that two things are equal (need the `PartialEq` trait)
   - E.g., integers, booleans, arrays, etc.
 
 <RustPlayground top="240px">
@@ -648,6 +745,10 @@ layout: section
 
 Chapter 4
 
+<!--
+so why was rust created? the goal of creating rust is to have a language that is as fast as c, but also safe like haskell and java. so we need to understand how rust manages memory, and how it ensures safety
+-->
+
 ---
 layout: two-cols-header
 ---
@@ -660,12 +761,15 @@ layout: two-cols-header
   - Constant-time, automatic allocation and deallocation
   - Data size and lifetime must be known at compile time
     - Function parameters and locals of known (constant) size
+    - Fixed lifetime
 
 <v-click>
 
+&nbsp;
 - The heap
-  - Dynamically sized data, with non-fixed lifetime
+  - Dynamically sized data
     - Slightly slower to access than stack data: via a pointer
+    - Non-fixed lifetime
 
 </v-click>
 
@@ -675,38 +779,15 @@ layout: two-cols-header
 
 <style>
 .two-cols-header {
-  grid-template-columns: 55% 45%;
+  grid-template-columns: 60% 40%;
 }
 </style>
 
----
-layout: two-cols-header
----
+<!--
+first, let's distinguish two places data can live.
 
-# Memory Management
-
-::left::
-
-**C**
-
-- Manual deallocation (C/C++): low overhead, but opportunities for devastating bugs
-  - Dangling pointers and double frees are instances of memory corruption
-
-```c
-char *p = malloc(10);
-// ...
-free(p);
-```
-
-::right::
-
-<img src="/images/ownership-stack-heap.svg" alt="A pointer p on the stack refers to allocated data on the heap" class="h-70 mx-auto" />
-
-<style>
-.two-cols-header {
-  grid-template-columns: 55% 45%;
-}
-</style>
+we know when to reclaim the local pointer. But when should we reclaim the heap data?
+-->
 
 ---
 layout: two-cols-header
@@ -739,6 +820,46 @@ p = null; // GC will collect this later
 }
 </style>
 
+<!--
+the other way is to have a garbage collector
+
+Here, assigning null removes this reference. If no other references keep the object reachable, it becomes eligible for collection. That doesn’t mean it is collected immediately.
+-->
+
+---
+layout: two-cols-header
+---
+
+# Memory Management
+
+::left::
+
+**C**
+
+- Manual deallocation (C/C++): low overhead, but opportunities for devastating bugs
+
+```c
+char *p = malloc(10);
+// ...
+free(p);
+```
+
+::right::
+
+<img src="/images/ownership-stack-heap.svg" alt="A pointer p on the stack refers to allocated data on the heap" class="h-70 mx-auto" />
+
+<style>
+.two-cols-header {
+  grid-template-columns: 60% 40%;
+}
+</style>
+
+<!--
+in C, the programmer decides when to free the data.
+
+it gives us explicit control, but is error-prone.
+-->
+
 ---
 
 # Memory Management Errors (in C)
@@ -759,7 +880,7 @@ p = null; // GC will collect this later
 {
     int *x = (int *) malloc(sizeof(int));
     free(x);
-    *x = 5; /* oops! */
+    *x = 5; // can still access freed memory
 }
 ```
 
