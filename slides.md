@@ -793,7 +793,7 @@ unset CARGO_TARGET_DIR
 ```rust
 pub fn my_function() -> i32 { 4 }
 
-#[cfg(test)] // Include this module when compiling tests.
+#[cfg(test)]
 mod tests {
     use super::my_function;
 
@@ -1168,10 +1168,8 @@ let y = x;
 
 - A reference is an explicit, **non-owning pointer** to the original value
 - Creating a reference with `&` is called **borrowing**; ownership stays with the original owner
-- **Shared references** (`&T`) do not permit mutation through the reference
-  - Even if the original owner is mutable (defined with `let mut`)
-
-<RustPlayground top="210px">
+- **Shared references** (`&T`) do not permit mutation through the reference (like `const T *` in C)
+- **Mutable references** (`&mut T`) permit mutation (like `T *` in C)
 
 ```rust
 fn main() {
@@ -1185,8 +1183,6 @@ fn calc_len(s: &String) -> usize {
     s.len()
 } // The borrow ends; the String is not dropped here.
 ```
-
-</RustPlayground>
 
 <!--
 but it would be inconvenient to have to clone a String every time we want to use it
@@ -1215,11 +1211,11 @@ fn foo(s: String) -> usize {
 
 ---
 
-# Mutable references
+# References and Borrowing
 
 - To permit mutation via a reference, use `&mut`
-  - Instead of just `&`
   - But only OK for mutable variables (`let mut`)
+- Dereference with `*` to access the value behind a reference
 
 <RustPlayground top="185px">
 
@@ -1228,9 +1224,10 @@ fn main() {
     let mut s1 = String::from("hello");
     let len = calc_len(&s1);
     println!("the length of '{}' is {}", s1, len);
+
     append(&mut s1); // Borrow s1 mutably; do not move it.
     println!("after append: '{}'", s1);
-    // s1.push_str("!"); // implicit &mut
+    // s1.push_str("!"); // implicit &mut: String::push_str(&mut s1, "!");
 }
 
 fn append(s: &mut String) {
@@ -1245,6 +1242,12 @@ fn calc_len(s: &String) -> usize {
 
 </RustPlayground>
 
+<!--
+* to use a mutable reference, use ampersand mut
+* we can also use `*` to dereference references
+* implicit `&mut`, see std.rs
+-->
+
 ---
 
 # Rules of References
@@ -1257,14 +1260,45 @@ fn calc_len(s: &String) -> usize {
 
 ---
 
+# Borrowing and Mutation
+
+- When we have a shared reference
+  - The owner and shared references can all read the value
+  - Mutation is disallowed
+
+<RustPlayground top="185px">
+
+```rust
+fn main() {
+    let mut s1 = String::from("hello");
+    {
+        let s2 = &s1;
+        println!("String is {} and {}", s1, s2); // OK: shared reads
+        // s1.push_str(" world!"); // Error: s2 is used below (implicit &mut)
+        println!("Borrowed string is {}", s2);
+    }
+    s1.push_str(" world!"); // Mutation OK: shared borrow has ended
+    println!("String is {}", s1);
+}
+```
+
+</RustPlayground>
+
+<!--
+let's see some examples
+
+the reason why this should be invalid is that if we modify s1, the next use of s2 would see changed text. that would violate our assumption that oh since s2 is an immutable reference, it should not change. so rust disallows this.
+-->
+
+---
+
 # Quiz 2: What Does This Evaluate To?
 
 A. `"Hello!"` <br/>
-B. `"Hello! World!"` <br/>
-<span :class="{ 'font-bold': $clicks >= 1 }">C. Error</span> <v-click><span class="ml-[120px]">✅ — `s2` is a shared reference, so it cannot mutate the string</span></v-click> <br/>
-D. `"Hello!World!"`
+<span :class="{ 'font-bold': $clicks >= 1 }">B. Error</span> <v-click><span class="ml-[120px]">✅ — `s2` is a shared reference, so it cannot mutate the string</span></v-click> <br/>
+C. `"Hello!World!"`
 
-<RustPlayground top="200px">
+<RustPlayground top="180px">
 
 ```rust
 fn main() {
@@ -1306,19 +1340,32 @@ fn main() {
 
 ---
 
-# Quiz 4: Is this code valid?
+# Borrowing and Mutation
+
+* When we have a mutable reference
+  * No other references (mutable or shared) are allowed
+
+<RustPlayground top="160px">
 
 ```rust
-let mut s1 = String::from(“hello”);
-{ 
-    let s2 = &mut s1; //ok
-    let s3 = &mut s1; //fails: second borrow
-    s1.push_str(" there"); //fails: second borrow
-    s2.push_str(" world"); //ok
+fn main() {
+    let mut s1 = String::from("hello");
+    { 
+        let s2 = &mut s1;
+        let s3 = &mut s1; // Error: second borrow
+        s1.push_str(" there"); // Error: second (implicit) borrow
+        s2.push_str(" world");
+    }
+    s1.push_str(" there"); // OK
+    println!("String is {}", s1);
 }
-s1.push_str(" there"); //ok
-println!("String is {}", s1); //ok
 ```
+
+</RustPlayground>
+
+<!--
+another rule is that we can only have one mutable reference at a time.
+-->
 
 ---
 
