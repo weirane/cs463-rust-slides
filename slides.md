@@ -17,6 +17,7 @@ CS 463
 <div class="text-xs">
 
 <!--Slide source: https://github.com/weirane/cs463-rust-slides/ <br/>-->
+PDF: [5.rust.pdf](../5.rust.pdf) <br/>
 Slides built on: Michael Hicks CMSC 330
 
 </div>
@@ -68,7 +69,8 @@ Something in between ... ?
 </style>
 
 <!--
-at this point you've probably seen several programming languages, and they have different characteristics and can be used in different fields
+at this point you've probably seen several programming languages, and they have different characteristics and can be used in different fields.
+java and haskell let us work without explicitly allocating and freeing memory
 
 [click]
 can we keep c's performance and control, but also have safety of java and haskell?
@@ -231,58 +233,6 @@ alt: Rust Playground editor and execution output showing Hello, world!
 
 - There is an in-browser execution environment
   - https://play.rust-lang.org/
-
----
-layout: two-cols-header
----
-
-# Build system: cargo (demo)
-
-::left::
-
-Make a project, build it, run it
-
-```shellsession
-$ cargo new hello
-$ cd hello
-$ eza -T
-.
-├── Cargo.toml
-└── src
-    └── main.rs
-$ cargo build
-   Compiling hello v0.1.0 (/path/to/hello)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.64s
-$ ./target/debug/hello
-Hello, world!
-$ # or
-$ cargo run
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
-     Running `/another/path/to/hello`
-Hello, world!
-```
-
-::right::
-
-`src/main.rs`:
-
-```rust
-fn main() {
-    println!("Hello, world!")
-}
-```
-
-[More on Cargo](https://doc.rust-lang.org/stable/cargo/getting-started/first-steps.html)
-
-&nbsp;
-* `cargo new <name>`: create a project
-* `cargo build`: build the project
-* `cargo run`: build & run the project
-* `cargo test`: run tests
-
-<!--
-unset CARGO_TARGET_DIR
--->
 
 ---
 hide: true
@@ -470,6 +420,34 @@ shadowing, type annotation, mut
 -->
 
 ---
+
+# While loops
+
+- Works just like the `while` loops in other languages
+- Use `mut` when the loop updates a variable
+
+<RustPlayground top="160px">
+
+```rust
+fn main() {
+    let mut number = 3;
+
+    while number != 0 {
+        println!("{number}!");
+        number -= 1;
+    }
+
+    println!("LIFTOFF!!!");
+}
+```
+
+</RustPlayground>
+
+<!--
+one place where mut is useful is in while loops. we need to mut to define the loop variable
+-->
+
+---
 clicks: 1
 ---
 
@@ -557,8 +535,8 @@ layout: two-cols-header
 ::left::
 
 - Integers
-  - Signed: `i8`, `i16`, `i32`, `i64`
-  - Unsigned: `u8`, `u16`, `u32`, `u64`
+  - Signed: `i8`, `i16`, `i32`, `i64`, `i128`
+  - Unsigned: `u8`, `u16`, `u32`, `u64`, `u128`
   - `isize`, `usize`: machine word size
 
 - Floating point numbers
@@ -670,6 +648,54 @@ fn main() {
 </RustPlayground>
 
 ---
+layout: two-cols-header
+---
+
+# Compound Data: Strings
+
+- `"hello"` is a string literal, with type `&str` (a borrowed string slice)
+- `String` stores owned, growable UTF-8 encoded text
+- Unlike Java, Rust `String`s are mutable (if defined with `let mut`)
+
+::left::
+
+Rust
+
+```rust
+let mut s = String::from("Hello");
+s.push_str(", world!");
+println!("{s}");
+```
+
+```
+Hello, world!
+```
+
+::right::
+
+Java
+
+```java
+String s = "Hello";
+s.concat(", world!");
+System.out.println(s);
+```
+
+```
+Hello
+```
+
+<!--
+and let's quickly compare strings in rust and java.
+
+In Java, String objects are immutable. Calling concat returns a new String.
+
+but in Rust, strings are mutable. push_str modifies the existing String. We need mut because we are changing its contents.
+
+We'll explain borrowing in more detail later.
+-->
+
+---
 clicks: 1
 ---
 
@@ -689,6 +715,58 @@ fn main() {}
 ```
 
 </RustPlayground>
+
+---
+layout: two-cols-header
+---
+
+# Build system: cargo (demo)
+
+::left::
+
+Make a project, build it, run it
+
+```shellsession
+$ cargo new hello
+$ cd hello
+$ eza -T
+.
+├── Cargo.toml
+└── src
+    └── main.rs
+$ cargo build
+   Compiling hello v0.1.0 (/path/to/hello)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.64s
+$ ./target/debug/hello
+Hello, world!
+$ # or
+$ cargo run
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running `/another/path/to/hello`
+Hello, world!
+```
+
+::right::
+
+`src/main.rs`:
+
+```rust
+fn main() {
+    println!("Hello, world!")
+}
+```
+
+[More on Cargo](https://doc.rust-lang.org/stable/cargo/getting-started/first-steps.html)
+
+&nbsp;
+* `cargo new <name>`: create a project
+* `cargo build`: build the project
+* `cargo run`: build & run the project
+* `cargo test`: run tests
+
+<!--
+unset CARGO_TARGET_DIR
+-->
 
 ---
 
@@ -910,9 +988,10 @@ these errors may be obvious in small examples, but can be subtle in large progra
 
 - Rust's heap memory is managed without garbage collection
 
-- The compiler ensures no dangling pointers or double frees
+- **The compiler** runs static analyses to ensure no dangling pointers or double frees
   - Unsafe idioms are disallowed in safe Rust
-  - Memory leaks are not prevented (not a memory-safety problem)
+  <!--- Memory leaks are not prevented (not a memory-safety problem)-->
+  - Instead of having "segmentation faults" when running, the compiler catches errors at compile time
 
 - Key features of Rust that ensure safety: **ownership** and **lifetimes**
   - Data has a single owner. Immutable aliases are OK, but mutation only via the owner or a single mutable reference
@@ -991,27 +1070,35 @@ hide: true
 </v-clicks>
 
 ---
+layout: two-cols-header
+---
 
 # Ownership Transfer: Variable Assignment
 
-- `let y = x` **moves** the `String` from `x` to `y`; its heap buffer stays in place
-- After the move, `y` is the only owner and `x` can no longer be used
-- Only `y` frees the buffer when dropped: prevents a **double free**
+- `let s2 = s1` **moves** the `String` from `s1` to `s2`; its heap buffer stays in place
+- After the move, `s2` is the only owner and `s1` can no longer be used
+- Only `s2` frees the buffer when dropped: prevents a **double free**
 
-<RustPlayground top="185px">
+::left::
 
 ```rust
 fn main() {
-    let x = String::from("hello");
+    let s1 = String::from("hello");
 
-    let y = x; // Ownership moves from x to y.
+    let s2 = s1; // Ownership moves from s1 to s2.
 
-    println!("{}, world!", y); // OK
-    // println!("{}, world!", x); // Error: x was moved.
+    println!("{}, world!", s2); // OK
+    // println!("{}, world!", s1); // Error: s1 was moved.
 }
 ```
 
-</RustPlayground>
+::right::
+
+<div class="grid h-68 place-items-center">
+  <img src="/images/trpl04-01.svg" class="col-start-1 row-start-1 h-50 w-full object-contain" />
+  <img v-click="1" src="/images/trpl04-02.svg" class="col-start-1 row-start-1 h-68 w-full object-contain bg-white" />
+  <img v-click="2" src="/images/trpl04-04.svg" class="col-start-1 row-start-1 h-68 w-full object-contain bg-white" />
+</div>
 
 <!--
 Ownership may be **transferred** (moved) to another variable or function parameter
@@ -1021,16 +1108,15 @@ Ownership may be **transferred** (moved) to another variable or function paramet
 
 # Ownership Transfer: Function Calls
 
-- Passing a `String` by value moves ownership from the argument to the function's parameter
-- Returning it moves ownership from the function to the caller's receiving variable
-
-<RustPlayground top="170px">
+- Passing arguments follows the same ownership rules as assignment.
+- Returning values can also transfer ownership.
 
 ```rust
 fn main() {
     let s1 = String::from("hello");
 
-    let s2 = id(s1); // s1 moves to the parameter; the result moves to s2.
+    // s1 moves to the parameter; the result moves to s2.
+    let s2 = id(s1);
 
     println!("{}", s2); // OK
     // println!("{}", s1); // Error: s1 was moved.
@@ -1041,8 +1127,6 @@ fn id(s: String) -> String {
 }
 ```
 
-</RustPlayground>
-
 ---
 layout: two-cols-header
 ---
@@ -1051,15 +1135,18 @@ layout: two-cols-header
 
 - `.clone()` creates an independent `String` and heap buffer; the original stays usable
 
-- Types implementing **`Copy`** copy automatically: `i32`, `char`, `bool`, `f32`, and tuples of `Copy` types
+- Types implementing **`Copy`** copy automatically
+  - `i32`, `char`, `bool`, `f32`, and tuples of `Copy` types ([complete list](https://doc.rust-lang.org/stable/std/marker/trait.Copy.html#implementors))
 
 ::left::
 
 Cloning a `String`
 ```rust
-let x = String::from("hello");
-let y = x.clone();
+let s1 = String::from("hello");
+let s2 = s1.clone();
 ```
+
+<img src="/images/trpl04-03.svg" class="h-60 w-full" />
 
 ::right::
 
@@ -1101,7 +1188,7 @@ fn calc_len(s: &String) -> usize {
 
 </RustPlayground>
 
-<!-- 
+<!--
 but it would be inconvenient to have to clone a String every time we want to use it
 -->
 
