@@ -17,7 +17,8 @@ CS 463
 <div class="text-xs">
 
 <!--Slide source: https://github.com/weirane/cs463-rust-slides/ <br/>-->
-PDF: [5.rust.pdf](../5.rust.pdf) <br/>
+Interactive site: <https://mason.gmu.edu/~rwang29/talks/cs463-rust/> <br/>
+PDF: <a href="./5.rust.pdf">5.rust.pdf</a> <br/>
 Slides built on: Michael Hicks CMSC 330
 
 </div>
@@ -783,7 +784,7 @@ unset CARGO_TARGET_DIR
 # Unit Testing in Rust
 
 - Unit testing is for local or private functions
-  - Put such tests in the same file as your code
+  - Can put such tests in the same file as your code
 - Use `assert!` to test that something is true
 - Use `assert_eq!` to test that two things are equal (need the `PartialEq` trait)
   - E.g., integers, booleans, arrays, etc.
